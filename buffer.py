@@ -1,27 +1,27 @@
 import numpy as np
 import torch
 
-class ReplayBuffer():
+class ReplayBuffer:
     def __init__(self, max_size, input_shape, n_actions, device='cpu'):
         self.mem_size = max_size
         self.mem_ctr = 0
         self.state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.uint8)
         self.next_state_memory = np.zeros((self.mem_size, *input_shape), dtype=np.uint8)
-        self.action_memory = np.zeros(self.mem_size, dtype=np.uint8)
+        self.action_memory = np.zeros(self.mem_size, dtype=np.uint8)  # for discrete actions
         self.reward_memory = np.zeros(self.mem_size, dtype=np.uint8)
         self.terminal_memory = np.zeros(self.mem_size, dtype=bool)
 
         self.device = device
 
     def can_sample(self, batch_size):
-        return self.mem_ctr > batch_size*5
-    
+        return self.mem_ctr > batch_size * 5
+
     def store_transition(self, state, action, reward, next_state, done):
         index = self.mem_ctr % self.mem_size
 
         self.state_memory[index] = state
         self.next_state_memory[index] = next_state
-        self.action_memory[index] = torch.tensor(action).detach().cpu()
+        self.action_memory[index] = action  # Just store as numpy-compatible
         self.reward_memory[index] = reward
         self.terminal_memory[index] = done
 
@@ -39,8 +39,12 @@ class ReplayBuffer():
 
         states = torch.tensor(states, dtype=torch.float32).to(self.device)
         next_states = torch.tensor(next_states, dtype=torch.float32).to(self.device)
-        actions = torch.tensor(actions, dtype=torch.float32).to(self.device)
+        actions = torch.tensor(actions, dtype=torch.int64).to(self.device)
         rewards = torch.tensor(rewards, dtype=torch.float32).to(self.device)
         dones = torch.tensor(dones, dtype=torch.bool).to(self.device)
-        
+
         return states, actions, rewards, next_states, dones
+
+def soft_update(target, source, tau=0.005):
+    for target_param, param in zip(target.parameters(), source.parameters()):
+        target_param.data.copy_(target_param.data * (1.0 - tau) + param.data * tau)
