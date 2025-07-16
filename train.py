@@ -40,6 +40,12 @@ hidden_layer = 128
 learning_rate = 0.0001
 step_repeat = 4
 gamma = 0.99
+episodes = 10000
+max_episode_steps = 10000
+batch_size = 64
+epsilopn = 1.0
+min_epsilon = 0.01
+epsilon_decay = 0.995
 
 env = gym.make("ALE/Pong-v5", render_mode="rgb_array")
 
@@ -55,3 +61,16 @@ agent = Agent(
     step_repeat=step_repeat,
     gamma=gamma
 )
+
+summary_writer_suffix = f'dqn_lr={learning_rate}_hl={hidden_layer}_bs={batch_size}'
+
+agent.train(
+    episodes=episodes,
+    max_episode_steps=max_episode_steps,
+    summary_writer_suffix=summary_writer_suffix,
+    batch_size=batch_size,
+    epsilon=epsilon,
+    epsilon_decay=epsilon_decay,
+    min_epsilon=min_epsilon
+)
+

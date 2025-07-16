@@ -16,7 +16,7 @@ class Model(nn.Module):
 
         self.fc1 = nn.Linear(conv_output_size, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.L1Loss(hidden_dim, hidden_dim)  
+        self.fc3 = nn.Linear(hidden_dim, hidden_dim)  
 
         self.output = nn.Linear(hidden_dim, action_dim)
         self.apply(self.weights_init)
