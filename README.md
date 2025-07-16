@@ -113,12 +113,6 @@ See [`requirements.txt`](requirements.txt) for all dependencies, including:
 
 ---
 
-## License
-
-MIT License (add your own license if needed).
-
----
-
 ## Acknowledgments
 
 - [Gymnasium](https://gymnasium.farama.org/)
